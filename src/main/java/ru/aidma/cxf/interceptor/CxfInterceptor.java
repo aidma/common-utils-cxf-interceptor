@@ -34,13 +34,11 @@ public class CxfInterceptor extends AbstractSoapInterceptor {
     @Override
     public void handleMessage(SoapMessage soapMessage) {
         try {
-            // It's looking cute
-            Stream.of(1)// Just to initialize stream with one element
-                    .map(nothing -> soapMessage.getContent(InputStream.class))
+            Optional.of(soapMessage.getContent(InputStream.class))
                     .map(this::streamToString)
                     .map(function)
                     .map(this::stringToStream)
-                    .forEach(stream -> soapMessage.setContent(InputStream.class, stream));
+                    .ifPresent(stream -> soapMessage.setContent(InputStream.class, stream));
         } catch (Exception e) {
             throw new Fault(e);
         }
